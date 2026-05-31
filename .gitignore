@@ -1,0 +1,6 @@
+.direnv
+/book
+/docs/book/
+/target
+result
+result-*
