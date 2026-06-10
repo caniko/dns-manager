@@ -14,6 +14,23 @@
 
     git-hooks.url = "github:cachix/git-hooks.nix";
     git-hooks.inputs.nixpkgs.follows = "nixpkgs";
+
+    plinth = {
+      url = "git+https://codeberg.org/caniko/plinth.git?ref=refs/heads/trunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
+    nix-manager-core = {
+      url = "git+https://codeberg.org/caniko/nix-manager-core";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rs-harbor.follows = "rs-harbor";
+      inputs.rust-overlay.follows = "rust-overlay";
+      inputs.crane.follows = "crane";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+      inputs.git-hooks.follows = "git-hooks";
+    };
   };
 
   outputs = inputs: import ./nix inputs;
