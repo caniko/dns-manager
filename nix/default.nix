@@ -40,7 +40,7 @@ nix-manager-core.lib.mkManagerOutputs {
       generate = pkgs:
         import ./generate.nix {
           inherit lib pkgs;
-          dns-manager = (cargoFor pkgs.system).package;
+          dns-manager = (cargoFor pkgs.stdenv.hostPlatform.system).package;
         };
     };
 
