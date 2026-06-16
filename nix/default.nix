@@ -64,6 +64,27 @@ nix-manager-core.lib.mkManagerOutputs {
       };
     });
 
+    devShells = forAllSystems (system: let
+      pkgs = pkgsFor system;
+      toolchain = rs-harbor.lib.mkToolchain {inherit pkgs;};
+      cross = rs-harbor.lib.mkCross {inherit pkgs system;};
+    in {
+      docs = rs-harbor.lib.mkDocsShell {
+        inherit pkgs cross;
+        inherit (toolchain) craneLib;
+        packages = with pkgs; [
+          bind
+          mdbook
+          octodns
+          (plinth.packages.${system}.plinth-project)
+        ];
+        extraShellHook = ''
+          echo "Project site: plinth-project serve --config website/plinth-project.toml"
+          echo "Documentation: mdbook serve docs"
+        '';
+      };
+    });
+
     templates.default = {
       path = ../example;
       description = "A dns-manager example flake";
