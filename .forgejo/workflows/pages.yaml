@@ -26,5 +26,10 @@ jobs:
       - name: Verify custom domain
         run: grep -qx 'dns-manager.tartanoglu.com' result/.domains
 
+      - name: Validate Pages domain
+        run: |
+          nix build .#site --no-link --out-link result-pages-site
+          test -f result-pages-site/.domains
+          grep -qx dns-manager.tartanoglu.com result-pages-site/.domains
       - name: Deploy Codeberg Pages
         run: nix run .#deploy-pages

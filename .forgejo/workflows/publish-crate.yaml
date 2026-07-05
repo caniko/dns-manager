@@ -82,7 +82,7 @@ jobs:
         run: nix develop -c cargo test
 
       - name: Build docs
-        run: nix develop -c cargo doc --no-deps --all-features
+        run: nix develop .#docs -c cargo doc --no-deps --all-features
 
       - name: Clippy
         run: nix develop -c cargo clippy --all-targets -- --deny warnings
