@@ -27,6 +27,9 @@ pub struct RawDoc {
     /// Standalone records declared outside any host, grouped by zone apex.
     #[serde(default, rename = "extraConfig")]
     pub extra_config: Option<RawExtra>,
+    /// HTTP redirect intents projected by consumers into their routing backend.
+    #[serde(default)]
+    pub redirects: Vec<RawRedirect>,
 }
 
 /// A single host's `networking.domains` declaration.
@@ -76,6 +79,31 @@ pub struct RawRecord {
     /// Untyped payload; interpreted by record type during normalization.
     #[serde(default)]
     pub data: serde_json::Value,
+}
+
+/// Backend-neutral HTTP redirect intent. DNS records remain separate; consumers
+/// choose how to project this into an HTTP routing layer.
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct RawRedirect {
+    /// Hostname that should receive the redirect.
+    pub from: String,
+    /// Absolute URL origin/path prefix to redirect to.
+    pub to: String,
+    /// HTTP status code, normally 301.
+    #[serde(default = "default_redirect_status")]
+    pub status: i64,
+    /// Whether to append Caddy's `{http.request.uri}` placeholder.
+    #[serde(default = "default_preserve_path")]
+    pub preserve_path: bool,
+}
+
+fn default_redirect_status() -> i64 {
+    301
+}
+
+fn default_preserve_path() -> bool {
+    true
 }
 
 // ---------------------------------------------------------------------------

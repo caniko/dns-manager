@@ -40,7 +40,7 @@ nix-manager-core.lib.mkManagerOutputs {
       generate = pkgs:
         import ./generate.nix {
           inherit lib pkgs;
-          dns-manager = (cargoFor pkgs.stdenv.hostPlatform.system).package;
+          dns-manager = (cargoFor pkgs.buildPackages.stdenv.hostPlatform.system).package;
         };
     };
 
@@ -56,6 +56,22 @@ nix-manager-core.lib.mkManagerOutputs {
       docs = import ./docs.nix {inherit pkgs lib module;};
       inherit website;
       site = website;
+    });
+
+    checks = forAllSystems (system: let
+      pkgs = pkgsFor system;
+      serializerFixture = import ./to-pkl-test.nix {inherit lib;};
+    in {
+      nix-to-pkl-special-dns-keys = pkgs.runCommand "nix-to-pkl-special-dns-keys" {} ''
+        cat > actual.pkl <<'EOF'
+        ${serializerFixture}
+        EOF
+        grep -F '["tartanoglu.com"]' actual.pkl >/dev/null
+        grep -F '[""]' actual.pkl >/dev/null
+        grep -F '["_dmarc"]' actual.pkl >/dev/null
+        grep -F '["mail._domainkey"]' actual.pkl >/dev/null
+        touch "$out"
+      '';
     });
 
     apps = forAllSystems (system: {

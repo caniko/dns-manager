@@ -1,0 +1,53 @@
+/// dns-manager raw configuration contract.
+///
+/// Standalone users can import this module for type annotations while keeping
+/// the top-level config shape identical to the Rust CLI input.
+
+class Record {
+  ttl: Int? = null
+  comment: String? = null
+  ttlAuto: Boolean = false
+  proxied: Boolean = false
+  data: Any? = null
+}
+
+typealias Records = Mapping<String, Record>
+
+class Host {
+  defaultTTL: Int
+  baseDomains: Mapping<String, Records> = new Mapping {}
+  subDomains: Mapping<String, Records> = new Mapping {}
+}
+
+class ExtraConfig {
+  defaultTTL: Int
+  zones: Mapping<String, Mapping<String, Records>> = new Mapping {}
+}
+
+class Redirect {
+  from: String
+  to: String
+  status: Int = 301
+  preservePath: Boolean = true
+}
+
+class RawDoc {
+  hosts: Listing<Host> = new Listing {}
+  extraConfig: ExtraConfig? = null
+  redirects: Listing<Redirect> = new Listing {}
+}
+
+class OctodnsInput {
+  dnsConfig: RawDoc
+  config: Mapping<String, Any> = new Mapping {}
+  zones: Mapping<String, Any> = new Mapping {}
+  manager: String? = null
+}
+
+class CloudflareInput {
+  dnsConfig: RawDoc
+  token: Mapping<String, Any>
+  zones: Mapping<String, Any>? = null
+  extraProviderSettings: Mapping<String, Any> = new Mapping {}
+  extraGlobalConfig: Mapping<String, Any> = new Mapping {}
+}

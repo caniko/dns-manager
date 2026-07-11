@@ -18,14 +18,14 @@ DNS data is **declared in Nix** and **resolved and rendered in Rust**.
 
 - The Nix layer is thin: the `networking.domains` NixOS module and a standalone
   `extraConfig` attrset let you declare data; `dns-manager.lib.collect`
-  serializes it to JSON.
+  serializes it to Pkl for the binary.
 - The `dns-manager` Rust binary does everything else — domain matching, sub→base
   inheritance, multi-host merging, validation, and rendering. It is also a
   standalone CLI, usable and testable outside Nix.
 
 ```
 NixOS module / extraConfig  ──collect──▶  dns-manager  ──▶  zonefiles
-        (declare)            (JSON)        (resolve +        octoDNS config
+        (declare)            (Pkl)         (resolve +        octoDNS config
                                             render)          cloudflare config
 ```
 
@@ -36,10 +36,11 @@ DNS outputs follow from that declaration directly.
 ## Flake outputs
 
 - `nixosModules.dns` — the `networking.domains` module.
-- `lib.generate pkgs` → `{ zonefiles, octodns, cloudflare, resolve }` render
-  derivations.
+- `lib.generate pkgs` → `{ zonefiles, octodns, cloudflare, caddyRoutes, resolve }`
+  render derivations/helpers.
 - `lib.collect dnsConfig` — pure-Nix view of the collected raw config.
 - `packages.dns-manager` — the CLI binary; `apps`/`packages.default` run it.
+- `pkl/DnsConfig.pkl` — the standalone Pkl contract for external CLI configs.
 - `packages.docs` — the mdBook documentation.
 
 ## Quick start
@@ -48,7 +49,9 @@ DNS outputs follow from that declaration directly.
 nix flake init -t git+https://codeberg.org/caniko/dns-manager
 ```
 
-Or read [example/flake.nix](example/flake.nix) and [example/dns.nix](example/dns.nix).
+Or read [example/flake.nix](example/flake.nix), [example/dns.nix](example/dns.nix),
+and the standalone Pkl examples [example/dns.pkl](example/dns.pkl) /
+[example/cloudflare.pkl](example/cloudflare.pkl).
 
 A minimal renderer call:
 

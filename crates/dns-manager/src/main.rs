@@ -10,9 +10,10 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use clap::{Args, Parser, Subcommand};
+use serde::de::DeserializeOwned;
 
-use dns_manager::render::{cloudflare, octodns, zonefile, OutputFile};
-use dns_manager::{parse_document, resolve_document, Result};
+use dns_manager::render::{caddy, cloudflare, octodns, zonefile, OutputFile};
+use dns_manager::{resolve_document, Error, Result};
 
 #[derive(Parser)]
 #[command(name = "dns-manager", version, about, long_about = None)]
@@ -31,6 +32,8 @@ enum Command {
     Octodns(OutArgs),
     /// Render a Cloudflare octoDNS config directory (config.yaml + zones/).
     Cloudflare(OutArgs),
+    /// Render Caddy JSON redirect routes.
+    CaddyRoutes(ConfigArgs),
 }
 
 #[derive(Args)]
@@ -64,7 +67,7 @@ fn main() -> ExitCode {
 fn run(cli: Cli) -> Result<()> {
     match cli.command {
         Command::Resolve(args) => {
-            let doc = parse_document(&read_input(&args.config)?)?;
+            let doc = load_config(&args.config)?;
             let config = resolve_document(&doc)?;
             let json = serde_json::to_string_pretty(&config)?;
             io::stdout().write_all(json.as_bytes())?;
@@ -72,7 +75,7 @@ fn run(cli: Cli) -> Result<()> {
             Ok(())
         }
         Command::Zonefile(args) => {
-            let doc = parse_document(&read_input(&args.config)?)?;
+            let doc = load_config(&args.config)?;
             let config = resolve_document(&doc)?;
             let files: Vec<OutputFile> = zonefile::render_all(&config)
                 .into_iter()
@@ -81,21 +84,55 @@ fn run(cli: Cli) -> Result<()> {
             write_outputs(&args.out, &files)
         }
         Command::Octodns(args) => {
-            let input: octodns::OctodnsInput = serde_json::from_str(&read_input(&args.config)?)?;
+            let input: octodns::OctodnsInput = load_config(&args.config)?;
             let config = resolve_document(&input.dns_config)?;
             let out_abs = prepare_out(&args.out)?;
             let files = octodns::render(&input, &config, &out_abs)?;
             write_outputs(&args.out, &files)
         }
         Command::Cloudflare(args) => {
-            let input: cloudflare::CloudflareInput =
-                serde_json::from_str(&read_input(&args.config)?)?;
+            let input: cloudflare::CloudflareInput = load_config(&args.config)?;
             let config = resolve_document(&input.dns_config)?;
             let out_abs = prepare_out(&args.out)?;
             let files = cloudflare::render(&input, &config, &out_abs)?;
             write_outputs(&args.out, &files)
         }
+        Command::CaddyRoutes(args) => {
+            let doc = load_config(&args.config)?;
+            dns_manager::validate::check(&doc)?;
+            let routes = caddy::render_routes(&doc);
+            let json = serde_json::to_string_pretty(&routes)?;
+            io::stdout().write_all(json.as_bytes())?;
+            io::stdout().write_all(b"\n")?;
+            Ok(())
+        }
     }
+}
+
+fn load_config<T>(config: &str) -> Result<T>
+where
+    T: DeserializeOwned,
+{
+    if config == "-" || config.ends_with(".json") {
+        Ok(serde_json::from_str(&read_input(config)?)?)
+    } else {
+        load_pkl(Path::new(config))
+    }
+}
+
+fn load_pkl<T>(path: &Path) -> Result<T>
+where
+    T: DeserializeOwned,
+{
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
+    runtime
+        .block_on(pklx::eval_to_typed(
+            path,
+            pklx::pklr::EvalOptions::default(),
+        ))
+        .map_err(|err| Error::Pkl(format!("{err:?}")))
 }
 
 /// Read the input JSON from a file path, or stdin when the path is `-`.

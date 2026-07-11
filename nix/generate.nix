@@ -1,21 +1,25 @@
-# Render derivations: thin wrappers that serialize collected DNS config to JSON
+# Render derivations: thin wrappers that serialize collected DNS config to Pkl
 # and run the `dns-manager` binary at build time.
 #
 # Exposed to consumers as `(dns-manager.lib.generate pkgs).{ zonefiles, octodns,
-# cloudflare, resolve }`.
+# cloudflare, caddyRoutes, resolve }`.
 {
   lib,
   pkgs,
   dns-manager,
 }: let
   collect = import ./collect.nix {inherit lib;};
+  pkl = import ./to-pkl.nix {inherit lib;};
   bin = "${dns-manager}/bin/dns-manager";
-  inputFile = name: value: pkgs.writeText name (builtins.toJSON value);
+  inputFile = name: value: pkgs.writeText name (pkl.moduleToPkl value);
+  pklEvalEnv = {
+    SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+  };
 
   renderDir = subcommand: name: input:
-    pkgs.runCommand name {} ''
+    pkgs.runCommand name pklEvalEnv ''
       mkdir -p "$out"
-      ${bin} ${subcommand} --config ${inputFile "${name}-input.json" input} --out "$out"
+      ${bin} ${subcommand} --config ${inputFile "${name}-input.pkl" input} --out "$out"
     '';
 in {
   # Pure-Nix raw view of the collected config (no binary needed).
@@ -23,12 +27,18 @@ in {
 
   # Resolved config as a JSON file (runs the binary).
   resolve = dnsConfig:
-    pkgs.runCommand "dns-resolved.json" {} ''
-      ${bin} resolve --config ${inputFile "dns-input.json" (collect dnsConfig)} > "$out"
+    pkgs.runCommand "dns-resolved.json" pklEvalEnv ''
+      ${bin} resolve --config ${inputFile "dns-input.pkl" (collect dnsConfig)} > "$out"
     '';
 
   # BIND zonefiles, one file per zone.
   zonefiles = dnsConfig: renderDir "zonefile" "dns-zones" (collect dnsConfig);
+
+  # Caddy JSON routes for HTTP redirect intents.
+  caddyRoutes = dnsConfig:
+    builtins.fromJSON (builtins.readFile (pkgs.runCommand "dns-caddy-routes.json" pklEvalEnv ''
+      ${bin} caddy-routes --config ${inputFile "dns-caddy-routes-input.pkl" (collect dnsConfig)} > "$out"
+    ''));
 
   # Generic octoDNS config directory. `settings` mirrors the legacy octodnsConfig
   # input: { dnsConfig, config ? {}, zones ? {}, manager ? null }.
@@ -52,9 +62,9 @@ in {
       exec ${pkgs.octodns}/bin/octodns-sync --config-file "$1/config.yaml" "''${@:2}"
     '';
   in
-    pkgs.runCommand "dns-cloudflare" {} ''
+    pkgs.runCommand "dns-cloudflare" pklEvalEnv ''
       mkdir -p "$out"
-      ${bin} cloudflare --config ${inputFile "cloudflare-input.json" input} --out "$out"
+      ${bin} cloudflare --config ${inputFile "cloudflare-input.pkl" input} --out "$out"
       ${lib.optionalString isFile ''ln -s ${wrapper} "$out/octodns-sync-cloudflare"''}
     '';
 }

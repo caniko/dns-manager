@@ -28,14 +28,21 @@ Two sources feed into a `dnsConfig` attrset, both optional:
 }
 ```
 
-```nix
-# extraConfig (e.g. ./dns.nix)
-{
-  defaultTTL = 60;
-  zones."example.com"."" = {
-    ns.data = [ "ns1.invalid" "ns2.invalid" ];
-    txt = { comment = "policy"; data = "v=spf1 -all"; };
-  };
+```pkl
+// Standalone config (e.g. dns.pkl)
+import "../pkl/DnsConfig.pkl" as D
+
+hosts: Listing<D.Host> = new Listing {}
+extraConfig: D.ExtraConfig = new D.ExtraConfig {
+  defaultTTL = 60
+  zones = new Mapping {
+    ["example.com"] = new Mapping {
+      [""] = new Mapping {
+        ["ns"] = new D.Record { data = new Listing { "ns1.invalid"; "ns2.invalid" } }
+        ["txt"] = new D.Record { comment = "policy"; data = "v=spf1 -all" }
+      }
+    }
+  }
 }
 ```
 
@@ -53,6 +60,9 @@ let
   dnsConfig = {
     inherit (self) nixosConfigurations;
     extraConfig = import ./dns.nix;
+    redirects = [
+      { from = "example.com"; to = "https://www.example.com"; }
+    ];
   };
   generate = dns-manager.lib.generate nixpkgs.legacyPackages.${system};
 in {
@@ -76,6 +86,9 @@ in {
     token = { type = "env"; name = "CLOUDFLARE_API_TOKEN"; };
     zones."example.com".mode = "lenient";
   };
+
+  # Caddy JSON routes for redirects
+  caddyRoutes = generate.caddyRoutes dnsConfig;
 }
 ```
 
@@ -94,6 +107,20 @@ in {
 Each entry in `zones` accepts `mode` (`"lenient"`/`"strict"`), `manageRecordTypes`
 (a `TypeAllowlistFilter`), `excludeRecords` (`[{ name; type; }]`, a
 `NameRejectlistFilter`), and extra `processors`.
+
+### External Pkl config
+
+For non-Nix callers, author Pkl directly and pass it to the CLI:
+
+```bash
+dns-manager resolve --config example/dns.pkl
+dns-manager caddy-routes --config example/dns.pkl
+dns-manager cloudflare --config example/cloudflare.pkl --out result
+```
+
+`pkl/DnsConfig.pkl` is the checked-in contract module for typed standalone
+configuration. JSON remains accepted for compatibility, but Pkl is the primary
+format.
 
 ## 3. octoDNS
 

@@ -1,11 +1,14 @@
 //! Renderer behaviour tests for the octoDNS and Cloudflare outputs, exercising
 //! the example DNS data and the tricky provider-specific rules.
 
+use dns_manager::model::RawDoc;
+use dns_manager::render::caddy;
 use dns_manager::render::cloudflare::{self, CloudflareInput};
 use dns_manager::render::octodns::{self, OctodnsInput};
 use dns_manager::render::OutputFile;
 use dns_manager::resolve_document;
 use serde_json::json;
+use std::path::Path;
 
 /// The example zone data, as `extraConfig` (mirrors `example/dns.nix`).
 fn example_dns_config() -> serde_json::Value {
@@ -45,6 +48,88 @@ fn content<'a>(files: &'a [OutputFile], path: &str) -> &'a str {
         .find(|f| f.path == path)
         .unwrap_or_else(|| panic!("missing output file {path}"))
         .content
+}
+
+#[test]
+fn pkl_config_loads_current_record_shape() {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let doc: RawDoc = runtime
+        .block_on(pklx::eval_source_to_typed(
+            r#"
+hosts = new Listing {}
+extraConfig = new Mapping {
+  ["defaultTTL"] = 86400
+  ["zones"] = new Mapping {
+    ["example.com"] = new Mapping {
+      [""] = new Mapping {
+        ["txt"] = new Mapping {
+          ["comment"] = "Public policy records for the zone apex"
+          ["data"] = new Listing { "meow"; "v=spf1 -all" }
+        }
+      }
+      ["mail._domainkey"] = new Mapping {
+        ["txt"] = new Mapping {
+          ["data"] = "v=DKIM1; k=rsa; p=abc"
+        }
+      }
+    }
+  }
+}
+"#,
+            pklx::pklr::EvalOptions::default(),
+        ))
+        .unwrap();
+
+    let config = resolve_document(&doc).unwrap();
+    let zone = config.get("example.com").unwrap();
+    assert!(zone.contains_key("example.com"));
+    assert!(zone.contains_key("mail._domainkey.example.com"));
+}
+
+#[test]
+fn external_pkl_example_loads() {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let config_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../example/dns.pkl");
+    let doc: RawDoc = runtime
+        .block_on(pklx::eval_to_typed(
+            &config_path,
+            pklx::pklr::EvalOptions::default(),
+        ))
+        .unwrap();
+
+    let config = resolve_document(&doc).unwrap();
+    let zone = config.get("example.com").unwrap();
+    assert!(zone.contains_key("example.com"));
+    assert!(zone.contains_key("mail._domainkey.example.com"));
+    assert_eq!(doc.redirects.len(), 1);
+}
+
+#[test]
+fn caddy_routes_preserve_request_uri() {
+    let input: RawDoc = serde_json::from_value(json!({
+        "redirects": [{
+            "from": "tartanoglu.com",
+            "to": "https://can.tartanoglu.com",
+            "status": 301,
+            "preservePath": true
+        }]
+    }))
+    .unwrap();
+
+    let routes = caddy::render_routes(&input);
+    assert_eq!(routes.len(), 1);
+    assert_eq!(routes[0]["match"][0]["host"][0], "tartanoglu.com");
+    assert_eq!(routes[0]["handle"][0]["status_code"], 301);
+    assert_eq!(
+        routes[0]["handle"][0]["headers"]["Location"][0],
+        "https://can.tartanoglu.com{http.request.uri}"
+    );
 }
 
 #[test]

@@ -1,6 +1,7 @@
 //! Rendering the resolved [`Config`](crate::model::Config) into output formats:
 //! BIND zonefiles, generic octoDNS, and Cloudflare-flavoured octoDNS.
 
+pub mod caddy;
 pub mod cloudflare;
 pub mod octodns;
 pub mod yaml;

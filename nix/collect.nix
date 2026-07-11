@@ -14,6 +14,7 @@
 {lib}: dnsConfig: let
   nixosConfigurations = dnsConfig.nixosConfigurations or {};
   extraConfig = dnsConfig.extraConfig or null;
+  redirects = dnsConfig.redirects or [];
 
   enabledHosts = lib.filter (
     host: host.config.networking.domains.enable or false
@@ -32,4 +33,7 @@ in
   }
   // lib.optionalAttrs (extraConfig != null && extraConfig != {}) {
     inherit extraConfig;
+  }
+  // lib.optionalAttrs (redirects != []) {
+    inherit redirects;
   }

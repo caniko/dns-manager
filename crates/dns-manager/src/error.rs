@@ -9,6 +9,10 @@ pub enum Error {
     #[error("failed to parse input JSON: {0}")]
     Json(#[from] serde_json::Error),
 
+    /// Input Pkl could not be evaluated into the raw model.
+    #[error("failed to evaluate input Pkl: {0}")]
+    Pkl(String),
+
     /// A record payload had the wrong shape for its type, or some other local failure.
     #[error("{0}")]
     Message(String),

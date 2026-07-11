@@ -3,7 +3,7 @@
 ## Inspect the collected (raw) config
 
 `dns-manager.lib.collect dnsConfig` is pure Nix — it returns the exact attrset
-that gets serialized to JSON for the binary. Evaluate it to see what your
+that gets serialized to Pkl for the binary. Evaluate it to see what your
 declarations collapse to:
 
 ```bash

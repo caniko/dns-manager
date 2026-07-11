@@ -10,7 +10,7 @@ PR first so we can discuss the approach.
   rendering. Module map: `resolve/` (domain matching, merge, inheritance,
   normalization), `validate.rs`, `render/` (zonefile, octodns, cloudflare, yaml).
 - `nix/` — the thin Nix layer: the `networking.domains` module, `collect.nix`
-  (the JSON contract producer), `generate.nix` (render derivations), and the
+  (the raw contract producer), `generate.nix` (Pkl render derivations), and the
   crane build wiring.
 - `docs/book/` — mdBook sources; `module-options.md` is generated from the module.
 

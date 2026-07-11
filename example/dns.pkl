@@ -1,0 +1,83 @@
+import "../pkl/DnsConfig.pkl" as D
+
+hosts: Listing<D.Host> = new Listing {}
+
+extraConfig: D.ExtraConfig = new D.ExtraConfig {
+  defaultTTL = 86400
+  zones = new Mapping {
+    ["example.com"] = new Mapping {
+      [""] = new Mapping {
+        ["soa"] = new D.Record {
+          data = new Mapping {
+            ["rname"] = "admin.example.invalid"
+            ["mname"] = "ns.example.invalid"
+            ["serial"] = 1970010100
+            ["refresh"] = 7200
+            ["retry"] = 3600
+            ["ttl"] = 60
+            ["expire"] = 1209600
+          }
+        }
+        ["ns"] = new D.Record {
+          data = new Listing {
+            "ns1.invalid"
+            "ns2.invalid"
+            "ns3.invalid"
+          }
+        }
+        ["txt"] = new D.Record {
+          comment = "Public policy records for the zone apex"
+          data = new Listing {
+            "meow"
+            "v=spf1 a:mail.example.com -all"
+          }
+        }
+        ["mx"] = new D.Record {
+          ttlAuto = true
+          data = new Mapping {
+            ["exchange"] = "mail.example.com"
+            ["preference"] = 10
+          }
+        }
+      }
+      ["mail._domainkey"] = new Mapping {
+        ["txt"] = new D.Record {
+          data = "v=DKIM1; k=rsa; p=example"
+        }
+      }
+    }
+    ["example.net"] = new Mapping {
+      [""] = new Mapping {
+        ["a"] = new D.Record {
+          ttl = 60
+          proxied = true
+          data = "203.0.113.73"
+        }
+      }
+    }
+    ["example.invalid"] = new Mapping {
+      [""] = new Mapping {
+        ["a"] = new D.Record {
+          ttl = 60
+          data = "198.51.100.35"
+        }
+        ["aaaa"] = new D.Record {
+          ttl = 60
+          data = "2001:DB8:42fc::64"
+        }
+      }
+      ["redirect"] = new Mapping {
+        ["cname"] = new D.Record {
+          data = "example.net"
+        }
+      }
+    }
+  }
+}
+
+redirects: Listing<D.Redirect> = new Listing {
+  new D.Redirect {
+    from = "example.com"
+    to = "https://www.example.com"
+  }
+}

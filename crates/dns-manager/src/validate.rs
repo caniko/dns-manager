@@ -41,11 +41,32 @@ pub fn check(doc: &RawDoc) -> Result<()> {
             }
         }
     }
+    check_redirects(doc, &mut errors);
 
     if errors.is_empty() {
         Ok(())
     } else {
         Err(Error::Validation { messages: errors })
+    }
+}
+
+fn check_redirects(doc: &RawDoc, errors: &mut Vec<String>) {
+    for (idx, redirect) in doc.redirects.iter().enumerate() {
+        let ctx = format!("redirects[{idx}]");
+        if redirect.from.trim().is_empty() {
+            errors.push(format!("{ctx}.from must not be empty"));
+        }
+        if !(redirect.to.starts_with("https://") || redirect.to.starts_with("http://")) {
+            errors.push(format!("{ctx}.to must be an absolute http(s) URL"));
+        }
+        if redirect.to.contains("{http.request.uri}") {
+            errors.push(format!(
+                "{ctx}.to must not include {{http.request.uri}}; use preservePath instead"
+            ));
+        }
+        if !(300..=399).contains(&redirect.status) {
+            errors.push(format!("{ctx}.status must be a 3xx HTTP status code"));
+        }
     }
 }
 

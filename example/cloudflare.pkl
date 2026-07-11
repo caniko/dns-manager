@@ -1,0 +1,34 @@
+dnsConfig = new Mapping {
+  ["hosts"] = new Listing {}
+  ["extraConfig"] = new Mapping {
+    ["defaultTTL"] = 86400
+    ["zones"] = new Mapping {
+      ["example.com"] = new Mapping {
+        [""] = new Mapping {
+          ["txt"] = new Mapping {
+            ["data"] = "v=spf1 -all"
+          }
+        }
+      }
+    }
+  }
+  ["redirects"] = new Listing {
+    new Mapping {
+      ["from"] = "example.com"
+      ["to"] = "https://www.example.com"
+      ["status"] = 301
+      ["preservePath"] = true
+    }
+  }
+}
+
+token = new Mapping {
+  ["type"] = "env"
+  ["name"] = "CLOUDFLARE_API_TOKEN"
+}
+
+zones = new Mapping {
+  ["example.com"] = new Mapping {
+    ["mode"] = "lenient"
+  }
+}

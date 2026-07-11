@@ -13,12 +13,12 @@ hand-written zone files, and provider-specific YAML.
 DNS data is **declared in Nix** — through the `networking.domains` NixOS module
 and/or a standalone `extraConfig` attribute set — and **resolved and rendered in
 Rust**. The Nix layer is deliberately thin: it collects declarations and serializes
-them to JSON. The `dns-manager` binary does everything else: domain matching,
+them to Pkl. The `dns-manager` binary does everything else: domain matching,
 sub→base inheritance, multi-host merging, validation, and rendering.
 
 ```
 NixOS module / extraConfig  ──serialize──▶  dns-manager  ──▶  zonefiles
-        (declare)              (JSON)        (resolve +        octoDNS config
+        (declare)              (Pkl)         (resolve +        octoDNS config
                                               render)          cloudflare config
 ```
 

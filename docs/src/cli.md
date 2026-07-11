@@ -1,16 +1,18 @@
 # CLI
 
-`dns-manager` is the Rust binary the Nix layer calls at build time. You can also
-run it directly on a JSON document — the same format the Nix `collect` layer
-produces.
+`dns-manager` is the Rust binary the Nix layer calls at build time. Nix
+generation serializes inputs as Pkl and the CLI evaluates them with pklx.
+Standalone users should author Pkl against `pkl/DnsConfig.pkl`. You can still
+run it directly on a JSON document by passing `--config -` or a `.json` file.
 
 ```
-dns-manager <resolve|zonefile|octodns|cloudflare> --config <file|-> [--out <dir>]
+dns-manager <resolve|zonefile|octodns|cloudflare|caddy-routes> --config <file|-> [--out <dir>]
 ```
 
-- `--config` reads the input JSON from a file, or from stdin when `-` (default).
+- `--config` reads Pkl from files by default; `.json` files and stdin are read
+  as JSON for compatibility.
 - `--out` is the output directory (for everything except `resolve`, which prints
-  JSON to stdout).
+  JSON to stdout, and `caddy-routes`, which prints Caddy JSON routes).
 
 ## Input format
 
@@ -28,7 +30,10 @@ The top-level document is:
   "extraConfig": {
     "defaultTTL": 60,
     "zones": { "example.com": { "": { "ns": { "data": ["ns1.invalid"] } } } }
-  }
+  },
+  "redirects": [
+    { "from": "example.com", "to": "https://www.example.com", "status": 301, "preservePath": true }
+  ]
 }
 ```
 
@@ -48,3 +53,11 @@ The `octodns` and `cloudflare` subcommands take the document above under a
 - **`zonefile`** — write one BIND zonefile per zone into `--out`.
 - **`octodns`** — write `config.yaml` + `zones/<zone>` (BIND, with a dummy SOA) into `--out`.
 - **`cloudflare`** — write `config.yaml` + `zones/<zone>.yaml` (YAML provider) into `--out`.
+- **`caddy-routes`** — print Caddy JSON routes for `redirects`.
+
+Examples:
+
+```bash
+dns-manager resolve --config example/dns.pkl
+dns-manager cloudflare --config example/cloudflare.pkl --out result
+```
