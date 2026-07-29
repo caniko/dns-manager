@@ -32,7 +32,12 @@ The top-level document is:
     "zones": { "example.com": { "": { "ns": { "data": ["ns1.invalid"] } } } }
   },
   "redirects": [
-    { "from": "example.com", "to": "https://www.example.com", "status": 301, "preservePath": true }
+    {
+      "from": "example.com",
+      "to": "https://www.example.com",
+      "status": 301,
+      "preservePath": true
+    }
   ]
 }
 ```
