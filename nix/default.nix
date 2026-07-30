@@ -82,7 +82,7 @@ nix-manager-core.lib.mkManagerOutputs {
 
     devShells = forAllSystems (system: let
       pkgs = pkgsFor system;
-      toolchain = rs-harbor.lib.mkToolchain {inherit pkgs;};
+      toolchain = rs-harbor.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
       cross = rs-harbor.lib.mkCross {inherit pkgs system;};
     in {
       docs = rs-harbor.lib.mkDocsShell {
