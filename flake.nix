@@ -15,8 +15,9 @@
     git-hooks.inputs.nixpkgs.follows = "nixpkgs";
 
     plinth = {
-      url = "git+https://codeberg.org/caniko/plinth.git?ref=refs/heads/trunk";
+      url = "github:caniko/plinth/f4ec72550b3be3081f36e0ec46e52851d2a1befc";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rs-harbor.follows = "rs-harbor";
     };
 
     nix-manager-core = {
