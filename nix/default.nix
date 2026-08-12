@@ -44,19 +44,22 @@ nix-manager-core.lib.mkManagerOutputs {
         };
     };
 
-    packages = forAllSystems (system: let
-      pkgs = pkgsFor system;
-      website = plinth.lib.${system}.mkProjectSite {
-        pname = "dns-manager-website";
-        domain = "dns-manager.tartanoglu.com";
-        configPath = ../website/plinth-project.toml;
-        docsPackage = self.packages.${system}.docs;
-      };
-    in {
-      docs = import ./docs.nix {inherit pkgs lib module;};
-      inherit website;
-      site = website;
-    });
+    packages = forAllSystems (system:
+      if system == "x86_64-darwin"
+      then {}
+      else let
+        pkgs = pkgsFor system;
+        website = plinth.lib.${system}.mkProjectSite {
+          pname = "dns-manager-website";
+          domain = "dns-manager.tartanoglu.com";
+          configPath = ../website/plinth-project.toml;
+          docsPackage = self.packages.${system}.docs;
+        };
+      in {
+        docs = import ./docs.nix {inherit pkgs lib module;};
+        inherit website;
+        site = website;
+      });
 
     checks = forAllSystems (system: let
       pkgs = pkgsFor system;
@@ -74,32 +77,38 @@ nix-manager-core.lib.mkManagerOutputs {
       '';
     });
 
-    apps = forAllSystems (system: {
-      deploy-pages = plinth.lib.${system}.mkDeployPagesApp {
-        domain = "dns-manager.tartanoglu.com";
-      };
-    });
+    apps = forAllSystems (system:
+      if system == "x86_64-darwin"
+      then {}
+      else {
+        deploy-pages = plinth.lib.${system}.mkDeployPagesApp {
+          domain = "dns-manager.tartanoglu.com";
+        };
+      });
 
-    devShells = forAllSystems (system: let
-      pkgs = pkgsFor system;
-      toolchain = rs-harbor.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
-      cross = rs-harbor.lib.mkCross {inherit pkgs system;};
-    in {
-      docs = rs-harbor.lib.mkDocsShell {
-        inherit pkgs cross;
-        inherit (toolchain) craneLib;
-        packages = with pkgs; [
-          bind
-          mdbook
-          octodns
-          (plinth.packages.${system}.plinth-project)
-        ];
-        extraShellHook = ''
-          echo "Project site: plinth-project serve --config website/plinth-project.toml"
-          echo "Documentation: mdbook serve docs"
-        '';
-      };
-    });
+    devShells = forAllSystems (system:
+      if system == "x86_64-darwin"
+      then {}
+      else let
+        pkgs = pkgsFor system;
+        toolchain = rs-harbor.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
+        cross = rs-harbor.lib.mkCross {inherit pkgs system;};
+      in {
+        docs = rs-harbor.lib.mkDocsShell {
+          inherit pkgs cross;
+          inherit (toolchain) craneLib;
+          packages = with pkgs; [
+            bind
+            mdbook
+            octodns
+            (plinth.packages.${system}.plinth-project)
+          ];
+          extraShellHook = ''
+            echo "Project site: plinth-project serve --config website/plinth-project.toml"
+            echo "Documentation: mdbook serve docs"
+          '';
+        };
+      });
 
     templates.default = {
       path = ../example;
