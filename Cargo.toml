@@ -6,7 +6,7 @@ members = ["crates/dns-manager"]
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-repository = "https://codeberg.org/caniko/dns-manager"
+repository = "https://github.com/caniko/dns-manager"
 authors = ["caniko"]
 
 [workspace.dependencies]

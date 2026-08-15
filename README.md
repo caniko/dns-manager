@@ -2,7 +2,7 @@
 
 <!-- simit:badges:start -->
 
-[![CI](https://img.shields.io/badge/CI-drift-2088ff)](.forgejo/workflows/ci.yaml) [![Nix](https://img.shields.io/badge/Nix-managed-5277c3)](flake.nix) [![docs](https://img.shields.io/badge/docs-enabled-6f42c1)](docs) [![crates.io](https://img.shields.io/badge/crates.io-ready-f46623)](https://crates.io/crates/dns-manager)
+[![CI](https://img.shields.io/badge/CI-managed-2088ff)](.github/workflows/ci.yaml) [![Nix](https://img.shields.io/badge/Nix-managed-5277c3)](flake.nix) [![docs](https://img.shields.io/badge/docs-enabled-6f42c1)](docs) [![crates.io](https://img.shields.io/badge/crates.io-ready-f46623)](https://crates.io/crates/dns-manager)
 
 <!-- simit:badges:end -->
 
@@ -48,7 +48,7 @@ DNS outputs follow from that declaration directly.
 ## Quick start
 
 ```bash
-nix flake init -t git+https://codeberg.org/caniko/dns-manager
+nix flake init -t git+https://github.com/caniko/dns-manager
 ```
 
 Or read [example/flake.nix](example/flake.nix), [example/dns.nix](example/dns.nix),
@@ -61,7 +61,7 @@ A minimal renderer call:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    dns-manager.url = "git+https://codeberg.org/caniko/dns-manager";
+    dns-manager.url = "git+https://github.com/caniko/dns-manager";
     dns-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = { self, nixpkgs, dns-manager, ... }: let

@@ -422,11 +422,11 @@
         "rev": "ff50fa12ea954d1c6d01426e81d9ab7ca1ab187f",
         "revCount": 33,
         "type": "git",
-        "url": "https://codeberg.org/caniko/nix-manager-core"
+        "url": "https://github.com/caniko/nix-manager-core"
       },
       "original": {
         "type": "git",
-        "url": "https://codeberg.org/caniko/nix-manager-core"
+        "url": "https://github.com/caniko/nix-manager-core"
       }
     },
     "nix-opencode-lsp": {
@@ -808,12 +808,12 @@
         "rev": "073c7e8ffdd4d9f0b5c6735ec81377d1dde6a145",
         "revCount": 102,
         "type": "git",
-        "url": "https://codeberg.org/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/rs-harbor.git"
       },
       "original": {
         "ref": "trunk",
         "type": "git",
-        "url": "https://codeberg.org/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/rs-harbor.git"
       }
     },
     "rs-harbor_2": {
@@ -842,13 +842,13 @@
         "rev": "b40cd4c4fdf6133962f67bd68a48bfd5d554d47f",
         "revCount": 144,
         "type": "git",
-        "url": "https://codeberg.org/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/rs-harbor.git"
       },
       "original": {
         "ref": "trunk",
         "rev": "b40cd4c4fdf6133962f67bd68a48bfd5d554d47f",
         "type": "git",
-        "url": "https://codeberg.org/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/rs-harbor.git"
       }
     },
     "rs-harbor_3": {
@@ -869,13 +869,13 @@
         "rev": "f209ddbca3fdbb0dc31fa3886ccc2ff7369c18ac",
         "revCount": 164,
         "type": "git",
-        "url": "ssh://git@codeberg.org/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/rs-harbor.git"
       },
       "original": {
         "ref": "trunk",
         "rev": "f209ddbca3fdbb0dc31fa3886ccc2ff7369c18ac",
         "type": "git",
-        "url": "ssh://git@codeberg.org/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/rs-harbor.git"
       }
     },
     "rust-overlay": {
