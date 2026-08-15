@@ -10,11 +10,11 @@ href = "#overview"
 
 [[nav]]
 label = "Source"
-href = "ssh://git@codeberg.org/caniko/dns-manager.git"
+href = "https://github.com/caniko/dns-manager"
 
 [[footer_links]]
 label = "Source"
-href = "ssh://git@codeberg.org/caniko/dns-manager.git"
+href = "https://github.com/caniko/dns-manager"
 
 [[pages]]
 slug = "index"
@@ -29,7 +29,7 @@ subtitle = "<!-- simit:badges:start -->"
 
 [[pages.sections.ctas]]
 label = "View source"
-href = "ssh://git@codeberg.org/caniko/dns-manager.git"
+href = "https://github.com/caniko/dns-manager"
 primary = true
 
 [[pages.sections]]
