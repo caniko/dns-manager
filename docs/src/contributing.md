@@ -20,7 +20,7 @@ Everything is in the dev shell — run `nix develop` or `direnv allow`:
 
 | Tooling                             | Usage                                          |
 | ----------------------------------- | ---------------------------------------------- |
-| cargo / rustc (rs-harbor toolchain) | `cargo build`, `cargo run -p dns-manager -- …` |
+| cargo / rustc (harbor-rs toolchain) | `cargo build`, `cargo run -p dns-manager -- …` |
 | cargo-nextest                       | `cargo nextest run`                            |
 | treefmt (Nix/Markdown/YAML)         | `nix fmt`                                      |
 | bind / octodns                      | `named-checkzone`, `octodns-sync`              |

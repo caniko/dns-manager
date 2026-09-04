@@ -14,7 +14,7 @@
 - Repository reorganized: Rust crate under `crates/dns-manager/`, thin Nix layer
   under `nix/`. The `networking.domains` module is now a pure declaration with no
   inheritance/validation logic.
-- The flake builds with crane (via rs-harbor); inputs migrated accordingly.
+- The flake builds with crane (via harbor-rs); inputs migrated accordingly.
 - Validation now reports all violations at once at build time rather than failing
   module evaluation incrementally.
 
