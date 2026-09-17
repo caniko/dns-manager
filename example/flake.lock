@@ -135,6 +135,37 @@
         "type": "github"
       }
     },
+    "dns-manager": {
+      "inputs": {
+        "crane": [
+          "dns-manager",
+          "harbor-rs",
+          "crane"
+        ],
+        "git-hooks": "git-hooks",
+        "harbor-rs": "harbor-rs",
+        "nix-manager-core": "nix-manager-core",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "plinth": "plinth",
+        "rust-overlay": [
+          "dns-manager",
+          "harbor-rs",
+          "rust-overlay"
+        ],
+        "treefmt-nix": "treefmt-nix_3"
+      },
+      "locked": {
+        "path": "..",
+        "type": "path"
+      },
+      "original": {
+        "path": "..",
+        "type": "path"
+      },
+      "parent": []
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -745,6 +776,7 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "nixpkgs": [
+          "dns-manager",
           "nixpkgs"
         ]
       },
@@ -766,6 +798,7 @@
       "inputs": {
         "flake-compat": "flake-compat_2",
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ]
@@ -788,6 +821,7 @@
       "inputs": {
         "flake-compat": "flake-compat_3",
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "harbor-android",
           "nixpkgs"
@@ -812,10 +846,12 @@
         "flake-parts": "flake-parts_2",
         "git-hooks": "git-hooks_3",
         "meta-harbor": [
+          "dns-manager",
           "harbor-rs",
           "harbor-meta"
         ],
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ],
@@ -840,6 +876,7 @@
       "inputs": {
         "flake-parts": "flake-parts_3",
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ]
@@ -867,6 +904,7 @@
         "harbor-android": "harbor-android",
         "harbor-meta": "harbor-meta",
         "meta-harbor": [
+          "dns-manager",
           "harbor-rs",
           "harbor-meta"
         ],
@@ -897,6 +935,7 @@
       "inputs": {
         "flake-parts": "flake-parts_5",
         "nixpkgs": [
+          "dns-manager",
           "nix-manager-core",
           "rs-harbor",
           "nixpkgs"
@@ -921,6 +960,7 @@
       "inputs": {
         "flake-utils": "flake-utils_6",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "rs-harbor",
@@ -945,6 +985,7 @@
     "meta-harbor_3": {
       "inputs": {
         "flake-utils": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -953,6 +994,7 @@
           "flake-utils"
         ],
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -980,6 +1022,7 @@
       "inputs": {
         "flake-utils": "flake-utils_12",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1006,6 +1049,7 @@
       "inputs": {
         "flake-parts": "flake-parts_11",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "rs-harbor",
@@ -1031,6 +1075,7 @@
       "inputs": {
         "flake-parts": "flake-parts_13",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "rs-harbor",
           "nixpkgs"
@@ -1054,6 +1099,7 @@
     "nix-bundle": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ],
@@ -1076,6 +1122,7 @@
     "nix-bundle_2": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "nix-manager-core",
           "rs-harbor",
           "nixpkgs"
@@ -1099,6 +1146,7 @@
     "nix-bundle_3": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "rs-harbor",
@@ -1123,6 +1171,7 @@
     "nix-bundle_4": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "rs-harbor",
@@ -1147,6 +1196,7 @@
     "nix-bundle_5": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "rs-harbor",
           "nixpkgs"
@@ -1193,19 +1243,24 @@
     "nix-manager-core": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "crane"
         ],
         "git-hooks": [
+          "dns-manager",
           "git-hooks"
         ],
         "nixpkgs": [
+          "dns-manager",
           "nixpkgs"
         ],
         "rs-harbor": "rs-harbor",
         "rust-overlay": [
+          "dns-manager",
           "rust-overlay"
         ],
         "treefmt-nix": [
+          "dns-manager",
           "treefmt-nix"
         ]
       },
@@ -1227,6 +1282,7 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ]
@@ -1250,6 +1306,7 @@
       "inputs": {
         "flake-utils": "flake-utils_3",
         "nixpkgs": [
+          "dns-manager",
           "nix-manager-core",
           "rs-harbor",
           "nixpkgs"
@@ -1272,6 +1329,7 @@
       "inputs": {
         "flake-utils": "flake-utils_7",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "rs-harbor",
@@ -1295,6 +1353,7 @@
     "nix-opencode-lsp_4": {
       "inputs": {
         "flake-utils": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1303,6 +1362,7 @@
           "flake-utils"
         ],
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1329,6 +1389,7 @@
       "inputs": {
         "flake-utils": "flake-utils_13",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1354,6 +1415,7 @@
       "inputs": {
         "flake-utils": "flake-utils_15",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "rs-harbor",
@@ -1378,6 +1440,7 @@
       "inputs": {
         "flake-utils": "flake-utils_17",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "rs-harbor",
           "nixpkgs"
@@ -1400,16 +1463,19 @@
     "nix-pklx": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "plinth",
           "crane"
         ],
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nixpkgs"
         ],
         "plinth": "plinth_3",
         "rs-harbor": "rs-harbor_5",
         "rust-overlay": [
+          "dns-manager",
           "plinth",
           "rust-overlay"
         ]
@@ -1431,18 +1497,21 @@
     "nix-pklx_2": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
           "crane"
         ],
         "flake-utils": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
           "flake-utils"
         ],
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1451,6 +1520,7 @@
         "plinth": "plinth_4",
         "rs-harbor": "rs-harbor_3",
         "rust-overlay": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1730,10 +1800,27 @@
         "type": "github"
       }
     },
+    "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1789546076,
+        "narHash": "sha256-zVxLZiSnmaaPLwnhj7pwmqe3axBg/C6nG5JZsJMh2g4=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "b1b875982b17dabde9b4a37f3e229e74913e6db3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "osxcross": {
       "inputs": {
         "flake-utils": "flake-utils_2",
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ]
@@ -1757,6 +1844,7 @@
       "inputs": {
         "flake-utils": "flake-utils_4",
         "nixpkgs": [
+          "dns-manager",
           "nix-manager-core",
           "rs-harbor",
           "nixpkgs"
@@ -1781,6 +1869,7 @@
       "inputs": {
         "flake-utils": "flake-utils_8",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "rs-harbor",
@@ -1806,6 +1895,7 @@
       "inputs": {
         "flake-utils": "flake-utils_11",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1833,6 +1923,7 @@
       "inputs": {
         "flake-utils": "flake-utils_14",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -1859,6 +1950,7 @@
       "inputs": {
         "flake-utils": "flake-utils_16",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "rs-harbor",
@@ -1884,6 +1976,7 @@
       "inputs": {
         "flake-utils": "flake-utils_18",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "rs-harbor",
           "nixpkgs"
@@ -1911,6 +2004,7 @@
         "nix-cache-pin": "nix-cache-pin",
         "nix-pklx": "nix-pklx",
         "nixpkgs": [
+          "dns-manager",
           "nixpkgs"
         ],
         "rs-harbor": "rs-harbor_6",
@@ -1936,6 +2030,7 @@
         "crane": "crane_5",
         "flake-utils": "flake-utils_5",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "nixpkgs"
@@ -1963,6 +2058,7 @@
         "flake-utils": "flake-utils_9",
         "nix-pklx": "nix-pklx_2",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "nixpkgs"
@@ -1989,6 +2085,7 @@
         "crane": "crane_8",
         "flake-utils": "flake-utils_10",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2015,6 +2112,7 @@
       "inputs": {
         "crane": "crane_9",
         "flake-utils": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2023,6 +2121,7 @@
           "flake-utils"
         ],
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2049,23 +2148,8 @@
     },
     "root": {
       "inputs": {
-        "crane": [
-          "harbor-rs",
-          "crane"
-        ],
-        "git-hooks": "git-hooks",
-        "harbor-rs": "harbor-rs",
-        "nix-manager-core": "nix-manager-core",
-        "nixpkgs": [
-          "harbor-rs",
-          "nixpkgs"
-        ],
-        "plinth": "plinth",
-        "rust-overlay": [
-          "harbor-rs",
-          "rust-overlay"
-        ],
-        "treefmt-nix": "treefmt-nix_3"
+        "dns-manager": "dns-manager",
+        "nixpkgs": "nixpkgs_5"
       }
     },
     "rs-harbor": {
@@ -2125,6 +2209,7 @@
     "rs-harbor_3": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2132,6 +2217,7 @@
           "crane"
         ],
         "flake-utils": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2141,6 +2227,7 @@
         "meta-harbor": "meta-harbor_3",
         "nix-opencode-lsp": "nix-opencode-lsp_4",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2150,6 +2237,7 @@
         "osxcross": "osxcross_4",
         "plinth": "plinth_5",
         "rust-overlay": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2175,6 +2263,7 @@
     "rs-harbor_4": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2184,6 +2273,7 @@
         "meta-harbor": "meta-harbor_4",
         "nix-opencode-lsp": "nix-opencode-lsp_5",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2191,6 +2281,7 @@
         ],
         "osxcross": "osxcross_5",
         "rust-overlay": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2216,6 +2307,7 @@
     "rs-harbor_5": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "crane"
@@ -2225,12 +2317,14 @@
         "nix-bundle": "nix-bundle_4",
         "nix-opencode-lsp": "nix-opencode-lsp_6",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "nixpkgs"
         ],
         "osxcross": "osxcross_6",
         "rust-overlay": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "rust-overlay"
@@ -2255,6 +2349,7 @@
     "rs-harbor_6": {
       "inputs": {
         "crane": [
+          "dns-manager",
           "plinth",
           "crane"
         ],
@@ -2263,11 +2358,13 @@
         "nix-bundle": "nix-bundle_5",
         "nix-opencode-lsp": "nix-opencode-lsp_7",
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nixpkgs"
         ],
         "osxcross": "osxcross_7",
         "rust-overlay": [
+          "dns-manager",
           "plinth",
           "rust-overlay"
         ]
@@ -2291,6 +2388,7 @@
     "rust-overlay": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ]
@@ -2312,6 +2410,7 @@
     "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "nix-manager-core",
           "rs-harbor",
           "nixpkgs"
@@ -2334,6 +2433,7 @@
     "rust-overlay_3": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "plinth",
@@ -2357,6 +2457,7 @@
     "rust-overlay_4": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-cache-pin",
           "rs-harbor",
@@ -2380,6 +2481,7 @@
     "rust-overlay_5": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2405,6 +2507,7 @@
     "rust-overlay_6": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2431,6 +2534,7 @@
     "rust-overlay_7": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nix-pklx",
           "plinth",
@@ -2454,6 +2558,7 @@
     "rust-overlay_8": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "plinth",
           "nixpkgs"
         ]
@@ -2820,6 +2925,7 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "harbor-android",
           "nixpkgs"
@@ -2842,6 +2948,7 @@
     "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "harbor-rs",
           "nixpkgs"
         ]
@@ -2863,6 +2970,7 @@
     "treefmt-nix_3": {
       "inputs": {
         "nixpkgs": [
+          "dns-manager",
           "nixpkgs"
         ]
       },
