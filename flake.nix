@@ -15,14 +15,13 @@
     git-hooks.inputs.nixpkgs.follows = "nixpkgs";
 
     plinth = {
-      url = "git+https://codeberg.org/caniko/plinth.git?ref=refs/heads/trunk";
+      url = "git+https://github.com/caniko/plinth.git?ref=refs/heads/trunk";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-manager-core = {
       url = "git+https://github.com/caniko/nix-manager-core";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.harbor-rs.follows = "harbor-rs";
       inputs.rust-overlay.follows = "rust-overlay";
       inputs.crane.follows = "crane";
       inputs.treefmt-nix.follows = "treefmt-nix";
