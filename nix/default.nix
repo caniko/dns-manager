@@ -72,6 +72,14 @@ nix-manager-core.lib.mkManagerOutputs {
       nextest = cargo.craneLib.cargoNextest (cargo.commonArgs
         // {
           inherit (cargo) cargoArtifacts;
+          # The external-config regression reads the example and its schema
+          # from disk; Crane's Cargo-only filter excludes both Pkl files.
+          src = lib.cleanSourceWith {
+            src = ../.;
+            filter = path: type:
+              cargo.craneLib.filterCargoSources path type
+              || lib.hasSuffix ".pkl" path;
+          };
           partitions = 1;
           partitionType = "count";
           cargoNextestExtraArgs = "--no-tests pass";
