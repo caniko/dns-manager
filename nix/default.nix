@@ -64,8 +64,18 @@ nix-manager-core.lib.mkManagerOutputs {
 
     checks = forAllSystems (system: let
       pkgs = pkgsFor system;
+      cargo = cargoFor system;
       serializerFixture = import ./to-pkl-test.nix {inherit lib;};
     in {
+      # Pkl's default capability client eagerly loads native TLS roots even
+      # for local source evaluation. Sandbox tests need an explicit CA bundle.
+      nextest = cargo.craneLib.cargoNextest (cargo.commonArgs // {
+        inherit (cargo) cargoArtifacts;
+        partitions = 1;
+        partitionType = "count";
+        cargoNextestExtraArgs = "--no-tests pass";
+        SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+      });
       nix-to-pkl-special-dns-keys = pkgs.runCommand "nix-to-pkl-special-dns-keys" {} ''
         cat > actual.pkl <<'EOF'
         ${serializerFixture}
