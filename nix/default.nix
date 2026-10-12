@@ -5,7 +5,7 @@
 {
   self,
   nixpkgs,
-  harbor-rs,
+  harbor,
   rust-overlay,
   treefmt-nix,
   git-hooks,
@@ -14,7 +14,7 @@
   ...
 }:
 nix-manager-core.lib.mkManagerOutputs {
-  inherit self nixpkgs harbor-rs rust-overlay treefmt-nix git-hooks;
+  inherit self nixpkgs harbor rust-overlay treefmt-nix git-hooks;
   crateName = "dns-manager";
   srcDir = ../.;
 
@@ -91,10 +91,13 @@ nix-manager-core.lib.mkManagerOutputs {
       then {}
       else let
         pkgs = pkgsFor system;
-        toolchain = harbor-rs.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
-        cross = harbor-rs.lib.mkCross {inherit pkgs system;};
+        toolchain = harbor.lib.rust.mkToolchain {
+          inherit pkgs;
+          toolchainProfile = "nightly";
+        };
+        cross = harbor.lib.rust.mkCross {inherit pkgs system;};
       in {
-        docs = harbor-rs.lib.mkDocsShell {
+        docs = harbor.lib.rust.mkDocsShell {
           inherit pkgs cross;
           inherit (toolchain) craneLib;
           packages = with pkgs; [
