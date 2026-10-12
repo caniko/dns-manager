@@ -14,7 +14,8 @@
   ...
 }:
 nix-manager-core.lib.mkManagerOutputs {
-  inherit self nixpkgs harbor-rs rust-overlay treefmt-nix git-hooks;
+  inherit self nixpkgs rust-overlay treefmt-nix git-hooks;
+  rs-harbor = harbor-rs;
   crateName = "dns-manager";
   srcDir = ../.;
 
@@ -63,8 +64,27 @@ nix-manager-core.lib.mkManagerOutputs {
 
     checks = forAllSystems (system: let
       pkgs = pkgsFor system;
+      cargo = cargoFor system;
       serializerFixture = import ./to-pkl-test.nix {inherit lib;};
     in {
+      # Pkl's default capability client eagerly loads native TLS roots even
+      # for local source evaluation. Sandbox tests need an explicit CA bundle.
+      nextest = cargo.craneLib.cargoNextest (cargo.commonArgs
+        // {
+          inherit (cargo) cargoArtifacts;
+          # The external-config regression reads the example and its schema
+          # from disk; Crane's Cargo-only filter excludes both Pkl files.
+          src = lib.cleanSourceWith {
+            src = ../.;
+            filter = path: type:
+              cargo.craneLib.filterCargoSources path type
+              || lib.hasSuffix ".pkl" path;
+          };
+          partitions = 1;
+          partitionType = "count";
+          cargoNextestExtraArgs = "--no-tests pass";
+          SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+        });
       nix-to-pkl-special-dns-keys = pkgs.runCommand "nix-to-pkl-special-dns-keys" {} ''
         cat > actual.pkl <<'EOF'
         ${serializerFixture}
@@ -91,7 +111,10 @@ nix-manager-core.lib.mkManagerOutputs {
       then {}
       else let
         pkgs = pkgsFor system;
-        toolchain = harbor-rs.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
+        toolchain = harbor-rs.lib.mkToolchain {
+          inherit pkgs;
+          toolchainProfile = "nightly";
+        };
         cross = harbor-rs.lib.mkCross {inherit pkgs system;};
       in {
         docs = harbor-rs.lib.mkDocsShell {
