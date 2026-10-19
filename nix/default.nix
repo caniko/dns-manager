@@ -14,7 +14,9 @@
   ...
 }:
 nix-manager-core.lib.mkManagerOutputs {
-  inherit self nixpkgs harbor-rs rust-overlay treefmt-nix git-hooks;
+  inherit self nixpkgs rust-overlay treefmt-nix git-hooks;
+  # The locked scaffold predates the rs-harbor argument rename.
+  rs-harbor = harbor-rs;
   crateName = "dns-manager";
   srcDir = ../.;
 
@@ -91,7 +93,10 @@ nix-manager-core.lib.mkManagerOutputs {
       then {}
       else let
         pkgs = pkgsFor system;
-        toolchain = harbor-rs.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
+        toolchain = harbor-rs.lib.mkToolchain {
+          inherit pkgs;
+          toolchainProfile = "nightly";
+        };
         cross = harbor-rs.lib.mkCross {inherit pkgs system;};
       in {
         docs = harbor-rs.lib.mkDocsShell {
@@ -101,7 +106,7 @@ nix-manager-core.lib.mkManagerOutputs {
             bind
             mdbook
             octodns
-            (plinth.packages.${system}.plinth-project)
+            plinth.packages.${system}.plinth-project
           ];
           extraShellHook = ''
             echo "Project site: plinth-project serve --config website/plinth-project.toml"
