@@ -14,9 +14,7 @@
   ...
 }:
 nix-manager-core.lib.mkManagerOutputs {
-  inherit self nixpkgs rust-overlay treefmt-nix git-hooks;
-  # The locked scaffold predates the rs-harbor argument rename.
-  rs-harbor = harbor-rs;
+  inherit self nixpkgs harbor-rs rust-overlay treefmt-nix git-hooks;
   crateName = "dns-manager";
   srcDir = ../.;
 
