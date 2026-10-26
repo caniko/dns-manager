@@ -91,7 +91,10 @@ nix-manager-core.lib.mkManagerOutputs {
       then {}
       else let
         pkgs = pkgsFor system;
-        toolchain = harbor-rs.lib.mkToolchain {inherit pkgs; toolchainProfile = "nightly";};
+        toolchain = harbor-rs.lib.mkToolchain {
+          inherit pkgs;
+          toolchainProfile = "nightly";
+        };
         cross = harbor-rs.lib.mkCross {inherit pkgs system;};
       in {
         docs = harbor-rs.lib.mkDocsShell {
@@ -101,7 +104,7 @@ nix-manager-core.lib.mkManagerOutputs {
             bind
             mdbook
             octodns
-            (plinth.packages.${system}.plinth-project)
+            plinth.packages.${system}.plinth-project
           ];
           extraShellHook = ''
             echo "Project site: plinth-project serve --config website/plinth-project.toml"
