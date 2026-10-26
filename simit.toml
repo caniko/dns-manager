@@ -5,6 +5,7 @@ with_docs = true
 platform = "github"
 publish_crates = true
 provider = "actions"
+publish_strategy = "members"
 
 [ci.pages]
 repo = "caniko/dns-manager"
