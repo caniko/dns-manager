@@ -1,10 +1,12 @@
 [ci]
+push_branches = ["trunk", "simit/update/**"]
 runtime = "nix"
 runner = "ubuntu-24.04"
 with_docs = true
 platform = "github"
 publish_crates = true
 provider = "actions"
+publish_strategy = "members"
 
 [ci.pages]
 repo = "caniko/dns-manager"
