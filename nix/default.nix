@@ -14,8 +14,7 @@
   ...
 }:
 nix-manager-core.lib.mkManagerOutputs {
-  inherit self nixpkgs rust-overlay treefmt-nix git-hooks;
-  rs-harbor = harbor-rs;
+  inherit self nixpkgs harbor-rs rust-overlay treefmt-nix git-hooks;
   crateName = "dns-manager";
   srcDir = ../.;
 
@@ -83,7 +82,7 @@ nix-manager-core.lib.mkManagerOutputs {
           partitions = 1;
           partitionType = "count";
           cargoNextestExtraArgs = "--no-tests pass";
-          SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+          env = (cargo.commonArgs.env or {}) // {SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";};
         });
       nix-to-pkl-special-dns-keys = pkgs.runCommand "nix-to-pkl-special-dns-keys" {} ''
         cat > actual.pkl <<'EOF'
