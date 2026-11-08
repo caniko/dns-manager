@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Fixed
+
+- Load the existing lock-pinned development shell without fallback, lock updates,
+  or mutable sibling LSP inputs.
+- Regenerate release workflows with credential-free signed-tag archives and
+  independent, environment-bound trusted publication.
+
 ### Changed (breaking)
 
 - **Rewrite: all DNS logic moved from Nix into a Rust binary (`dns-manager`).**

@@ -15,7 +15,8 @@
     git-hooks.inputs.nixpkgs.follows = "nixpkgs";
 
     plinth = {
-      url = "git+https://github.com/caniko/plinth.git?ref=refs/heads/trunk";
+      # Includes Harbor's private build-scoped cache fallback for hosted docs.
+      url = "git+https://github.com/caniko/plinth.git?ref=trunk&rev=ed2424518f888bfb06b3cf4f11101bffe1b740e4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
