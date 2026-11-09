@@ -123,7 +123,7 @@ nix-manager-core.lib.mkManagerOutputs {
             bind
             mdbook
             octodns
-            (plinth.packages.${system}.plinth-project)
+            plinth.packages.${system}.plinth-project
           ];
           extraShellHook = ''
             echo "Project site: plinth-project serve --config website/plinth-project.toml"

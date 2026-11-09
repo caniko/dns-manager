@@ -27,6 +27,7 @@
       inputs.crane.follows = "crane";
       inputs.treefmt-nix.follows = "treefmt-nix";
       inputs.git-hooks.follows = "git-hooks";
+      inputs.harbor-rs.follows = "harbor-rs";
     };
   };
 
