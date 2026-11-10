@@ -35,8 +35,8 @@ the rendered records must follow that declaration rather than a copied string.
 The `networking.domains` NixOS module and a standalone `extraConfig` attrset,
 the collector that turns declarations into Pkl, resolution and validation, the
 zonefile/octoDNS/Cloudflare/Caddy renderers, the `dns-manager` CLI
-(`resolve`/`zonefile`/`octodns`/`cloudflare`), a worked multi-host example, and
-mdBook documentation.
+(`resolve`/`zonefile`/`octodns`/`cloudflare`/`caddy-routes`), a worked
+multi-host example, and mdBook documentation.
 
 ## Non-goals
 
