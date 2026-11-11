@@ -6,6 +6,7 @@
 //! → [`render`]. The convenience [`resolve_document`] runs validation and
 //! resolution together.
 
+pub mod cloudflare_api;
 mod error;
 pub mod model;
 pub mod render;

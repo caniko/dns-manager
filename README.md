@@ -81,6 +81,36 @@ A minimal renderer call:
 See the [documentation](docs/book/usage.md) for the full guide, and
 [MIGRATION.md](MIGRATION.md) if you used a pre-Rust version.
 
+## Cloudflare cache purge
+
+`cloudflare-purge` purges files from Cloudflare's edge cache for one zone. The
+API token is read from a file, so it never shows up in process arguments.
+
+The token needs **Zone:Read** (to resolve the zone name to its id) and
+**Zone:Cache Purge** for that zone; both can be combined into one API token
+scoped to the zone.
+
+```bash
+# Raw token, or env-style lines such as CLOUDFLARE_API_TOKEN="..."
+install -m 600 /dev/null /run/secrets/cloudflare-token
+printf '%s' "$CLOUDFLARE_API_TOKEN" > /run/secrets/cloudflare-token
+
+dns-manager cloudflare-purge \
+  --zone example.com \
+  --token-file /run/secrets/cloudflare-token \
+  --url https://example.com/ \
+  --url https://www.example.com/app.js
+```
+
+Every URL must be absolute `http(s)` and belong to the zone or one of its
+subdomains, and a single call purges between 1 and 30 URLs (Cloudflare's
+per-request limit). `--api-base` overrides the Cloudflare API endpoint. On
+success the command prints a JSON summary:
+
+```json
+{ "zone": "example.com", "zone_id": "…", "purged": ["https://example.com/"] }
+```
+
 ## Development
 
 ```bash

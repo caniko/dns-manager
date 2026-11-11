@@ -22,6 +22,14 @@ pub enum Error {
     #[error("validation failed:\n  - {}", .messages.join("\n  - "))]
     Validation { messages: Vec<String> },
 
+    /// A Cloudflare API call reported failure.
+    #[error("Cloudflare API: {0}")]
+    Cloudflare(String),
+
+    /// HTTP transport failure while talking to the Cloudflare API.
+    #[error("HTTP request failed: {0}")]
+    Http(String),
+
     /// I/O failure reading input or writing output.
     #[error(transparent)]
     Io(#[from] std::io::Error),
