@@ -34,6 +34,8 @@ enum Command {
     Cloudflare(OutArgs),
     /// Render Caddy JSON redirect routes.
     CaddyRoutes(ConfigArgs),
+    /// Purge files from the Cloudflare edge cache for one zone.
+    CloudflarePurge(CloudflarePurgeArgs),
 }
 
 #[derive(Args)]
@@ -51,6 +53,22 @@ struct OutArgs {
     /// Output directory (created if missing).
     #[arg(short, long)]
     out: PathBuf,
+}
+
+#[derive(Args)]
+struct CloudflarePurgeArgs {
+    /// Cloudflare zone name, e.g. `example.com`.
+    #[arg(long)]
+    zone: String,
+    /// File holding the API token (bare token or env-style `KEY=VALUE` lines).
+    #[arg(long)]
+    token_file: PathBuf,
+    /// Absolute URL to purge; repeat for up to 30 URLs.
+    #[arg(long = "url", required = true)]
+    urls: Vec<String>,
+    /// Cloudflare API base URL.
+    #[arg(long, default_value = dns_manager::cloudflare_api::DEFAULT_API_BASE)]
+    api_base: String,
 }
 
 fn main() -> ExitCode {
@@ -102,6 +120,19 @@ fn run(cli: Cli) -> Result<()> {
             dns_manager::validate::check(&doc)?;
             let routes = caddy::render_routes(&doc);
             let json = serde_json::to_string_pretty(&routes)?;
+            io::stdout().write_all(json.as_bytes())?;
+            io::stdout().write_all(b"\n")?;
+            Ok(())
+        }
+        Command::CloudflarePurge(args) => {
+            let token = dns_manager::cloudflare_api::load_token(&args.token_file)?;
+            let summary = dns_manager::cloudflare_api::purge_cache(
+                &args.api_base,
+                &token,
+                &args.zone,
+                &args.urls,
+            )?;
+            let json = serde_json::to_string(&summary)?;
             io::stdout().write_all(json.as_bytes())?;
             io::stdout().write_all(b"\n")?;
             Ok(())

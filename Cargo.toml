@@ -17,6 +17,17 @@ thiserror = "2"
 sha2 = "0.11"
 pklx = { version = "0.2.1", default-features = false }
 tokio = { version = "1", features = ["rt"] }
+# Same rustls feature set pklr already resolves, so Cargo.lock stays put.
+ureq = { version = "3", default-features = false, features = [
+  "platform-verifier",
+  "rustls-no-provider",
+] }
+# The provider the lockfile already compiles rustls with (pklr installs the same one).
+rustls = { version = "0.23", default-features = false, features = [
+  "aws_lc_rs",
+] }
+# Already locked (via ureq); used to validate purge URLs.
+url = "2.5"
 
 [workspace.metadata.crane]
 name = "dns-manager"
