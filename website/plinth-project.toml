@@ -1,16 +1,27 @@
 [site]
 title = "dns-manager"
-description = "<!-- simit:badges:start -->"
+description = "A NixOS module and Rust CLI that collect domain declarations into Pkl, then resolve inheritance and render BIND zonefiles, octoDNS config, Cloudflare config and Caddy routes."
 base_url = "/"
-footer_note = "Generated from repository metadata by the plinth-project FOSS sweep."
 
 [[nav]]
 label = "Overview"
 href = "#overview"
 
 [[nav]]
+label = "Install"
+href = "#install"
+
+[[nav]]
+label = "Documentation"
+href = "/docs/"
+
+[[nav]]
 label = "Source"
 href = "https://github.com/caniko/dns-manager"
+
+[[footer_links]]
+label = "Documentation"
+href = "/docs/"
 
 [[footer_links]]
 label = "Source"
@@ -19,27 +30,59 @@ href = "https://github.com/caniko/dns-manager"
 [[pages]]
 slug = "index"
 title = "dns-manager"
-description = "<!-- simit:badges:start -->"
+description = "A NixOS module and Rust CLI that collect domain declarations into Pkl, then resolve inheritance and render BIND zonefiles, octoDNS config, Cloudflare config and Caddy routes."
 
 [[pages.sections]]
 type = "hero"
 title = "dns-manager"
-tagline = "<!-- simit:badges:start -->"
-subtitle = "<!-- simit:badges:start -->"
+tagline = "Declare DNS once in Nix, render it everywhere."
+subtitle = "A NixOS module and Rust CLI that collect domain declarations into Pkl, then resolve inheritance and render BIND zonefiles, octoDNS config, Cloudflare config and Caddy routes."
 
 [[pages.sections.ctas]]
 label = "View source"
 href = "https://github.com/caniko/dns-manager"
 primary = true
 
+[[pages.sections.ctas]]
+label = "Read the documentation"
+href = "/docs/"
+
 [[pages.sections]]
 type = "feature_grid"
 id = "overview"
 
 [[pages.sections.features]]
-title = "Rust"
-description = "Project technology detected from repository manifests."
+title = "Four render targets, one declaration"
+description = "The same declared domains produce BIND zonefiles, generic octoDNS configuration, Cloudflare-flavoured octoDNS configuration, and Caddy routes, so a provider is a render target rather than a second source of truth."
 
 [[pages.sections.features]]
-title = "Nix"
-description = "Project technology detected from repository manifests."
+title = "Computed names stay correct"
+description = "A module can set a domain from hostName and domain, and every rendered record follows that expression instead of a copied string, which is the case where hand-written zones drift."
+
+[[pages.sections.features]]
+title = "Resolution in the binary"
+description = "Domain matching, sub-to-base inheritance, multi-host merging and validation all live in the standalone Rust CLI, so the same logic is exercised and tested outside Nix."
+
+[[pages.sections.features]]
+title = "Cloudflare cache purge"
+description = "cloudflare-purge clears 1 to 30 absolute URLs from one zone's edge cache and reads the API token from a file, so the secret never appears in process arguments."
+
+[[pages.sections]]
+type = "install"
+id = "install"
+heading = "Install"
+intro = "Start from the flake template, then declare domains through the networking.domains module or a standalone extraConfig attrset. The Nix layer only collects declarations; the binary resolves and renders them."
+guide_href = "/docs/"
+
+[[pages.sections.primary_routes]]
+label = "Flake template"
+audience = "A new flake that renders one zone"
+command = "nix flake init -t git+https://github.com/caniko/dns-manager"
+href = "/docs/usage.html"
+recommended = true
+
+[[pages.sections.secondary_routes]]
+label = "Add as a flake input"
+audience = "An existing infrastructure flake"
+command = 'dns-manager.url = "git+https://github.com/caniko/dns-manager";'
+href = "/docs/cli.html"
