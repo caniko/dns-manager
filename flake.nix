@@ -2,7 +2,7 @@
   description = "Declarative DNS data → BIND zonefiles and octoDNS, resolved and rendered in Rust";
 
   inputs = {
-    harbor-rs.url = "git+https://github.com/caniko/harbor-rs.git?ref=trunk&rev=fac8049316846e0ef1c1e6acd92aed7a337b333a";
+    harbor-rs.url = "git+https://github.com/caniko/harbor-rs.git?ref=trunk&rev=32ff87a4cbf5eac35e8bfa5bd4fb5ab887eb77fd";
 
     nixpkgs.follows = "harbor-rs/nixpkgs";
     rust-overlay.follows = "harbor-rs/rust-overlay";
