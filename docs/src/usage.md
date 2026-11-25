@@ -92,21 +92,55 @@ in {
 }
 ```
 
-### Cloudflare tokens
+### Sync to multiple providers
 
-`token` is one of:
+Use `generate.sync` or `dns-manager sync --config config.pkl --out result`.
+Only zones listed in `zones` are synced. Provider IDs are arbitrary and `targets`
+lists the IDs to sync to, in order:
 
-- `{ type = "env"; name = "CLOUDFLARE_API_TOKEN"; }` — read from the environment.
-- `{ type = "file"; path = "/run/secrets/cf"; envName = "CLOUDFLARE_API_TOKEN"; }`
-  — read from a file; the output directory gains an `octodns-sync-cloudflare`
-  wrapper that exports the token before invoking octoDNS.
-- `{ type = "literal"; value = "…"; }` — inline (discouraged; flagged in the config).
+```nix
+generate.sync {
+  inherit dnsConfig;
+  providers = {
+    old.kind = "cloudflare";
+    new.kind = "desec";
+    # new.minTtlOverride = 900; # Only after deSEC approves the lower zone floor.
+  };
+  zones."example.com" = {
+    targets = [ "old" "new" ];
+    excludeRecords = [ { name = "@"; type = "A"; } ];
+  };
+}
+```
 
-### Per-zone Cloudflare settings
+`kind` can be `cloudflare`, `desec`, `hetzner`, `gcore`, or `bunny`. Each provider
+accepts optional plugin `settings`. Set `token = { type = "env"; name = "…"; }`
+to override the default environment variable:
 
-Each entry in `zones` accepts `mode` (`"lenient"`/`"strict"`), `manageRecordTypes`
-(a `TypeAllowlistFilter`), `excludeRecords` (`[{ name; type; }]`, a
-`NameRejectlistFilter`), and extra `processors`.
+| Provider   | Default environment variable | Minimum TTL |
+| ---------- | ---------------------------- | ----------: |
+| Cloudflare | `CLOUDFLARE_API_TOKEN`       |           1 |
+| deSEC      | `DESEC_TOKEN`                |        3600 |
+| Hetzner    | `HETZNER_API_TOKEN`          |          60 |
+| Gcore      | `GCORE_API_KEY`              |         120 |
+| Bunny      | `BUNNY_API_KEY`              |          60 |
+
+Legacy `cloudflare` accepts the same input as before and uses the shared renderer.
+For legacy `file` tokens, the output now contains only config and zone files:
+the service or launcher must load `path` into `envName` (or the default variable)
+before running octoDNS. Do not use literal tokens in Nix or committed configs.
+
+Zone settings also accept `mode` (`"lenient"` or `"strict"`), `manageRecordTypes`,
+and extra `processors`. An exclusion matches a relative name, an in-zone full
+name, or `@` at the apex, plus the type. An excluded A record does not exclude
+MX or TXT at the same name.
+Use `extraGlobalConfig` for manager options and custom processor definitions;
+generated zone targets, sources, and processors take precedence.
+
+Managed records must meet every target's TTL and capability requirements. Apex
+CNAME is always rejected. Proxied records cannot be synced to a non-Cloudflare
+target, and apex ALIAS cannot be synced to deSEC or Hetzner. `ttlAuto` keeps a
+numeric TTL for other targets and adds automatic-TTL metadata for Cloudflare.
 
 ### External Pkl config
 
@@ -124,9 +158,39 @@ format.
 
 ## 3. octoDNS
 
-The generated directories are ready for `octodns-sync` / `octodns-dump`. For
-Cloudflare with a file token, use the generated wrapper:
+Use an octoDNS installation with the target plugins. With Nix, build one with
+`pkgs.octodns.withProviders (p: with p; [ cloudflare desec hetzner ])`, using only
+the plugins you need. The same three derivations are exposed as
+`generate.octodnsProviders`; install the Gcore and Bunny plugins separately.
+The Bunny renderer accepts apex ALIAS, but `octodns-bunny` 1.0.0 does not
+implement it. Do not use ALIAS with that plugin release.
+Load the token environment variables, then preview the changes before applying:
 
 ```bash
-result/octodns-sync-cloudflare result --doit
+octodns-sync --config-file result/config.yaml
 ```
+
+## 4. deSEC CLI and MCP
+
+Read operations use `--token-file`, `DESEC_TOKEN_FILE`, or `DESEC_TOKEN`.
+`dns-manager desec domain example.com` includes DNSKEY and DS records in `keys`.
+`domains` and `rrsets example.com` list the account's zones and a zone's RRsets.
+
+`domain-create`, `token-mint`, and `token-revoke` require a separate bare token
+file specified by `--admin-token-file` or `DESEC_ADMIN_TOKEN_FILE`. Minting
+prints only the token ID and path; it never overwrites an existing file.
+
+```bash
+dns-manager desec token-mint --name octodns --domain example.com --write \
+  --out /run/user/1000/octodns-desec
+```
+
+Without `--write`, new tokens cannot modify RRsets. Add `--domain`, `--subname`
+and `--type` to narrow writes; an empty subname means the apex. deSEC policies
+restrict writes, not reads. `--perm-manage-tokens` lets a token change its own
+policies, so do not grant it to an octoDNS sync token.
+
+`dns-manager desec mcp-serve` supports the same credential split. To use its
+token-mint tool, supply a private directory (`--token-output-dir` or
+`DESEC_TOKEN_OUTPUT_DIR`); the caller can request a new filename inside that
+directory. Neither the CLI nor MCP exposes RRset writes.

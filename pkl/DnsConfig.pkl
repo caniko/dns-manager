@@ -51,3 +51,32 @@ class CloudflareInput {
   extraProviderSettings: Mapping<String, Any> = new Mapping {}
   extraGlobalConfig: Mapping<String, Any> = new Mapping {}
 }
+
+typealias ProviderKind = "cloudflare" | "desec" | "hetzner" | "gcore" | "bunny"
+
+class ProviderConfig {
+  kind: ProviderKind
+  token: Mapping<String, Any>? = null
+  settings: Mapping<String, Any> = new Mapping {}
+  minTtlOverride: Int? = null
+}
+
+class ExcludeRecord {
+  name: String
+  type: String
+}
+
+class ZoneSync {
+  targets: Listing<String>
+  mode: "lenient" | "strict" = "lenient"
+  manageRecordTypes: Listing<String>? = null
+  excludeRecords: Listing<ExcludeRecord> = new Listing {}
+  processors: Listing<String> = new Listing {}
+}
+
+class SyncInput {
+  dnsConfig: RawDoc
+  providers: Mapping<String, ProviderConfig>
+  zones: Mapping<String, ZoneSync>
+  extraGlobalConfig: Mapping<String, Any> = new Mapping {}
+}

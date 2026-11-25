@@ -111,7 +111,7 @@ pub fn zone_to_string(
     for (name, entries) in records {
         if let Some(cs) = comments.get(name) {
             for comment in cs {
-                out.push(format!("# {comment}"));
+                out.extend(comment.lines().map(|line| format!("# {line}")));
             }
         }
         out.push(format!("{}:", json_string(name)));

@@ -26,7 +26,7 @@ pub enum Error {
     #[error("Cloudflare API: {0}")]
     Cloudflare(String),
 
-    /// HTTP transport failure while talking to the Cloudflare API.
+    /// HTTP transport failure while talking to a provider API.
     #[error("HTTP request failed: {0}")]
     Http(String),
 
