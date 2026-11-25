@@ -2,7 +2,7 @@
 # and run the `dns-manager` binary at build time.
 #
 # Exposed to consumers as `(dns-manager.lib.generate pkgs).{ zonefiles, octodns,
-# cloudflare, caddyRoutes, resolve }`.
+# sync, cloudflare, octodnsProviders, caddyRoutes, resolve }`.
 {
   lib,
   pkgs,
@@ -21,6 +21,8 @@
       mkdir -p "$out"
       ${bin} ${subcommand} --config ${inputFile "${name}-input.pkl" input} --out "$out"
     '';
+  renderSync = subcommand: name: settings:
+    renderDir subcommand name (settings // {dnsConfig = collect settings.dnsConfig;});
 in {
   # Pure-Nix raw view of the collected config (no binary needed).
   inherit collect;
@@ -44,27 +46,13 @@ in {
   # input: { dnsConfig, config ? {}, zones ? {}, manager ? null }.
   octodns = settings: renderDir "octodns" "dns-octodns" (settings // {dnsConfig = collect settings.dnsConfig;});
 
-  # Cloudflare octoDNS config directory. `settings`:
-  #   { dnsConfig, token, zones ? null, extraProviderSettings ? {}, extraGlobalConfig ? {} }
-  # For file tokens, an `octodns-sync-cloudflare` wrapper is added that exports
-  # the token from its file before invoking octoDNS.
-  cloudflare = settings: let
-    input =
-      settings
-      // {
-        dnsConfig = collect settings.dnsConfig;
-      };
-    token = settings.token;
-    isFile = (token.type or "") == "file";
-    wrapper = pkgs.writeShellScript "octodns-sync-cloudflare" ''
-      set -eu
-      export ${token.envName or "CLOUDFLARE_API_TOKEN"}="$(cat ${lib.escapeShellArg (token.path or "")})"
-      exec ${pkgs.octodns}/bin/octodns-sync --config-file "$1/config.yaml" "''${@:2}"
-    '';
-  in
-    pkgs.runCommand "dns-cloudflare" pklEvalEnv ''
-      mkdir -p "$out"
-      ${bin} cloudflare --config ${inputFile "cloudflare-input.pkl" input} --out "$out"
-      ${lib.optionalString isFile ''ln -s ${wrapper} "$out/octodns-sync-cloudflare"''}
-    '';
+  # Multi-provider YAML source and target config. Tokens are loaded at runtime.
+  sync = renderSync "sync" "dns-sync";
+
+  # Compatibility input; the binary adapts it to the same sync renderer.
+  cloudflare = renderSync "cloudflare" "dns-cloudflare";
+
+  octodnsProviders = {
+    inherit (pkgs.octodns-providers) cloudflare desec hetzner;
+  };
 }

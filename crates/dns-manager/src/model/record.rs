@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// entries), mirroring how a zone groups same-type RRs.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Record {
-    /// Time-to-live in seconds. Ignored on output when [`ttl_auto`](Self::ttl_auto) is set.
+    /// Time-to-live in seconds, also used as the fallback for automatic TTL.
     pub ttl: i64,
     /// Whether the provider should manage the TTL automatically (Cloudflare "auto").
     pub ttl_auto: bool,

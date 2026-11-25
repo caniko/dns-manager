@@ -1,5 +1,5 @@
 //! `dns-manager` resolves declarative DNS data (as serialized by its Nix layer)
-//! and renders it into BIND zonefiles, generic octoDNS, or Cloudflare octoDNS
+//! and renders it into BIND zonefiles, generic octoDNS, or multi-provider octoDNS
 //! configuration.
 //!
 //! The pipeline is [`parse_document`] → [`validate::check`] → [`resolve::resolve`]
@@ -7,8 +7,10 @@
 //! resolution together.
 
 pub mod cloudflare_api;
+pub mod desec;
 mod error;
 pub mod model;
+pub mod provider;
 pub mod render;
 pub mod resolve;
 pub mod validate;

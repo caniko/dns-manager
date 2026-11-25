@@ -25,10 +25,11 @@ and the `extraConfig` shape.
 
 ## Output compatibility
 
-The **Cloudflare output directory layout is unchanged**: `config.yaml`,
-`zones/<zone>.yaml`, and (for file tokens) the executable `octodns-sync-cloudflare`
-wrapper. Anything that consumes that directory at runtime — e.g. a
-`cloudflare-octodns` service — keeps working; only the Nix call site changes.
+The Cloudflare output still contains `config.yaml` and `zones/<zone>.yaml`.
+The generated `octodns-sync-cloudflare` launcher has been removed. File-token
+users must export the configured token environment variable at runtime and run
+`octodns-sync --config-file <output>/config.yaml` from an installation with the
+Cloudflare plugin.
 
 YAML/zonefile _formatting_ may differ byte-for-byte from the old Nix renderer, but
 the content is equivalent and validated (`named-checkzone`, octoDNS parse).
@@ -56,6 +57,5 @@ the content is equivalent and validated (`named-checkzone`, octoDNS parse).
 ## Downstream: canix-toolbelt
 
 `canix-toolbelt` consumes `utils.generate.cloudflareConfig`. Update its call to
-`(dns-manager.lib.generate pkgs).cloudflare` (same `settings`). The generated
-directory contract is identical, so the `cloudflare-octodns` service and
-`octodnsConfigLocal` wrapper require no further change.
+`(dns-manager.lib.generate pkgs).cloudflare` (same `settings`). Services that
+already load the token and invoke octoDNS directly can keep that launcher.

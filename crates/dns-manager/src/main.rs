@@ -1,7 +1,7 @@
 //! `dns-manager` command-line interface.
 //!
-//! Each subcommand reads a JSON document (from `--config <file>` or stdin) and
-//! either prints resolved config or writes a rendered output directory.
+//! Renderers read DNS config and write deployment artifacts; API commands
+//! operate on the configured provider.
 
 use std::fs;
 use std::io::{self, Read, Write};
@@ -12,7 +12,7 @@ use std::process::ExitCode;
 use clap::{Args, Parser, Subcommand};
 use serde::de::DeserializeOwned;
 
-use dns_manager::render::{caddy, cloudflare, octodns, zonefile, OutputFile};
+use dns_manager::render::{caddy, cloudflare, octodns, sync, zonefile, OutputFile};
 use dns_manager::{resolve_document, Error, Result};
 
 #[derive(Parser)]
@@ -30,12 +30,16 @@ enum Command {
     Zonefile(OutArgs),
     /// Render a generic octoDNS config directory (config.yaml + zones/).
     Octodns(OutArgs),
+    /// Render a multi-provider octoDNS sync directory.
+    Sync(OutArgs),
     /// Render a Cloudflare octoDNS config directory (config.yaml + zones/).
     Cloudflare(OutArgs),
     /// Render Caddy JSON redirect routes.
     CaddyRoutes(ConfigArgs),
     /// Purge files from the Cloudflare edge cache for one zone.
     CloudflarePurge(CloudflarePurgeArgs),
+    /// Inspect or bootstrap deSEC DNS, or serve the deSEC MCP tools.
+    Desec(dns_manager::desec::DesecArgs),
 }
 
 #[derive(Args)]
@@ -115,6 +119,13 @@ fn run(cli: Cli) -> Result<()> {
             let files = cloudflare::render(&input, &config, &out_abs)?;
             write_outputs(&args.out, &files)
         }
+        Command::Sync(args) => {
+            let input: sync::SyncInput = load_config(&args.config)?;
+            let config = resolve_document(&input.dns_config)?;
+            let out_abs = prepare_out(&args.out)?;
+            let files = sync::render(&input, &config, &out_abs)?;
+            write_outputs(&args.out, &files)
+        }
         Command::CaddyRoutes(args) => {
             let doc = load_config(&args.config)?;
             dns_manager::validate::check(&doc)?;
@@ -137,6 +148,7 @@ fn run(cli: Cli) -> Result<()> {
             io::stdout().write_all(b"\n")?;
             Ok(())
         }
+        Command::Desec(args) => dns_manager::desec::run(args),
     }
 }
 
