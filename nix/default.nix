@@ -29,6 +29,7 @@ nix-manager-core.lib.mkManagerOutputs {
   }: let
     module = import ./module.nix;
     collect = import ./collect.nix {inherit lib;};
+    checkDdnsExclusions = import ./ddns-exclusions.nix {inherit lib;};
   in {
     nixosModules = {
       dns = module;
@@ -36,7 +37,7 @@ nix-manager-core.lib.mkManagerOutputs {
     };
 
     lib = {
-      inherit collect;
+      inherit collect checkDdnsExclusions;
       generate = pkgs:
         import ./generate.nix {
           inherit lib pkgs;
@@ -66,6 +67,8 @@ nix-manager-core.lib.mkManagerOutputs {
       cargo = cargoFor system;
       serializerFixture = import ./to-pkl-test.nix {inherit lib;};
     in {
+      dns-ddns-exclusions = assert import ./ddns-exclusions-test.nix {inherit checkDdnsExclusions;};
+        pkgs.runCommand "dns-ddns-exclusions" {} "touch \"$out\"";
       # Pkl's default capability client eagerly loads native TLS roots even
       # for local source evaluation. Sandbox tests need an explicit CA bundle.
       nextest = cargo.craneLib.cargoNextest (cargo.commonArgs
