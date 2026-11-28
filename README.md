@@ -6,23 +6,23 @@
 
 <!-- simit:badges:end -->
 
-`dns-manager` declares DNS data once and renders it into useful outputs: BIND
-zonefiles, generic [octoDNS](https://github.com/octodns/octodns) config, and
-Cloudflare-flavoured octoDNS config.
+`dns-manager` declares DNS data once and renders BIND zonefiles, generic
+[octoDNS](https://github.com/octodns/octodns) config, and Cloudflare-flavoured
+octoDNS config.
 
-It is built for the case where DNS should come from the same source of truth as
-the rest of your infrastructure, instead of being duplicated across Nix modules,
-hand-written zone files, and provider-specific YAML.
+Use `dns-manager` when you want DNS to share a source of truth with the rest of
+your infrastructure, instead of duplicating it across Nix modules, hand-written
+zone files, and provider-specific YAML.
 
 ## How it works
 
 DNS data is **declared in Nix** and **resolved and rendered in Rust**.
 
-- The Nix layer is thin: the `networking.domains` NixOS module and a standalone
-  `extraConfig` attrset let you declare data; `dns-manager.lib.collect`
+- The Nix layer is thin: declare data through the `networking.domains` NixOS
+  module and a standalone `extraConfig` attrset; `dns-manager.lib.collect`
   serializes it to Pkl for the binary.
-- The `dns-manager` Rust binary does everything else — domain matching, sub→base
-  inheritance, multi-host merging, validation, and rendering. It is also a
+- The `dns-manager` Rust binary handles the rest — domain matching, sub→base
+  inheritance, multi-host merging, validation, and rendering. It also runs as a
   standalone CLI, usable and testable outside Nix.
 
 ```
@@ -31,9 +31,9 @@ NixOS module / extraConfig  ──collect──▶  dns-manager  ──▶  zone
                                             render)          cloudflare config
 ```
 
-That matters most when names are computed rather than static — a module can set
-`domain = "${config.networking.hostName}.${config.networking.domain}"` and the
-DNS outputs follow from that declaration directly.
+This is especially useful when names are computed rather than static: a module
+can set `domain = "${config.networking.hostName}.${config.networking.domain}"`
+and the DNS outputs follow from that declaration directly.
 
 ## Flake outputs
 
@@ -78,17 +78,16 @@ A minimal renderer call:
 }
 ```
 
-See the [documentation](docs/book/usage.md) for the full guide, and
+See the [documentation](docs/src/usage.md) for the full guide, and
 [MIGRATION.md](MIGRATION.md) if you used a pre-Rust version.
 
 ## Cloudflare cache purge
 
-`cloudflare-purge` purges files from Cloudflare's edge cache for one zone. The
-API token is read from a file, so it never shows up in process arguments.
+`cloudflare-purge` purges files from Cloudflare's edge cache for one zone,
+reading the API token from a file so it never appears in process arguments.
 
 The token needs **Zone:Read** (to resolve the zone name to its id) and
-**Zone:Cache Purge** for that zone; both can be combined into one API token
-scoped to the zone.
+**Zone:Cache Purge** for that zone; one zone-scoped API token can hold both.
 
 ```bash
 # Raw token, or env-style lines such as CLOUDFLARE_API_TOKEN="..."
@@ -102,10 +101,10 @@ dns-manager cloudflare-purge \
   --url https://www.example.com/app.js
 ```
 
-Every URL must be absolute `http(s)` and belong to the zone or one of its
-subdomains, and a single call purges between 1 and 30 URLs (Cloudflare's
-per-request limit). `--api-base` overrides the Cloudflare API endpoint. On
-success the command prints a JSON summary:
+Each URL must be an absolute `http(s)` URL whose host is the zone itself or one
+of its subdomains, with 1 to 30 URLs per call (Cloudflare's per-request limit).
+`--api-base` overrides the Cloudflare API endpoint. On success the command
+prints a JSON summary:
 
 ```json
 { "zone": "example.com", "zone_id": "…", "purged": ["https://example.com/"] }
