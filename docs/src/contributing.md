@@ -1,8 +1,7 @@
 # Contributing / Development
 
-Thank you for considering a contribution. Small fixes can go straight to a PR;
-for larger changes (e.g. a new provider backend) please open an issue or a draft
-PR first so we can discuss the approach.
+Small fixes can go straight to a PR. For larger changes (e.g. a new provider
+backend), open an issue or draft PR first so we can discuss the approach.
 
 ## Layout
 
@@ -12,7 +11,7 @@ PR first so we can discuss the approach.
 - `nix/` — the thin Nix layer: the `networking.domains` module, `collect.nix`
   (the raw contract producer), `generate.nix` (Pkl render derivations), and the
   crane build wiring.
-- `docs/book/` — mdBook sources; `module-options.md` is generated from the module.
+- `docs/src/` — mdBook sources; `module-options.md` is generated from the module.
 
 ## Toolchain
 
@@ -47,7 +46,7 @@ nix build .#docs && xdg-open result/index.html
 ```
 
 `module-options.md` is generated from `nix/module.nix` via `nixosOptionsDoc`; the
-rest of `docs/book/` is plain mdBook.
+rest of `docs/src/` is plain mdBook.
 
 When adding examples, use the reserved resources:
 
